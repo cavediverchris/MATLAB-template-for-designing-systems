@@ -11,7 +11,6 @@
 %% LINKS
 %       For further information check out: <a href="matlab:web('https://github.com/cavediverchris/MATLAB-Project-Template-System-Design#understand-the-utility-files')">Git documentation</a>.
 %% MAIN FUNCTION
-%% CLEAN_UP_PROJECT
 % Clear up workspace for dialog message
 clc;
 
