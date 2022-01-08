@@ -12,7 +12,7 @@ jobs:
       - name: Run tests and generate artifacts
         uses: matlab-actions/run-tests@v1
         with:
-          source-folder: toolbox/source
+          source-folder: utilities
           select-by-folder: tests
           test-results-pdf: results/results.pdf
           test-results-simulink-test: results/results.mldatx
