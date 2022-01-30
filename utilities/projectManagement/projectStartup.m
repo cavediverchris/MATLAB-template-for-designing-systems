@@ -88,51 +88,43 @@ end
 clear myCacheFolder myCodeGenFolder;
 
 %% Back Up - Project Folder
-% This schedules an aut-export of the Simulink project every day, it simply
-% checks whether a folder with the project name / date exists in the export
-% location
-
-% Print message to screen.
-disp('Back Up Process');
+% Use the Manager for MATLAB Project built-in utility for backing up the
+% project.
 
 % Set this flag to false to disable archiving
 runBackUp = true;
 
-% Define the location for export. 
-exportLocation = "C:\";
-exportLocation = fullfile(exportLocation, 'projectBackups');
-
-% Check that exportLocation is a valid path
-if exist(exportLocation, 'dir') == 0
-    % CASE: exportLocation does not exist as a path
-    % ACTION: create folder at exportLocation
-    mkdir(exportLocation);
+if runBackUp == true
+    % CASE: User wants to backup
+    % ACTION : check if the Manager for MATLAB Projects app is installed.
+    installedTbxes = matlab.addons.toolbox.installedToolboxes;
 end
 
-backupFile = projObj.Name + ...
-                "_backup_" + ...
-                date + ...
-                ".mlproj";
-            
-backupFile = fullfile(exportLocation, backupFile);
+if isempty(installedTbxes)
+    % CASE: The user has absolutely no toolboxes installed
+    % ACTION: Return a warning to advise the user to install the app
+    warning('projectStartup:ManagerNotInstalled', 'Manager for MATLAB Projects not installed, backups will not run.')
+    isManagerInstalled = false;
+else
+    % CASE: User has installed toolboxes
+    % ACTION: Search for the Manager app
+    
+    installedTbxes = struct2table(installedTbxes);
 
-% Check if the backup file exists for today, if not, create it.
-if runBackUp == false
-    % Print message to screen.
-    disp('... Secondary back-up disabled.')
-elseif (exist(backupFile , 'file') == 0) && (runBackUp == true)
-    % Print message to screen.
-    disp("... No archive file found, exporting project to: " +  backupFile);
-    
-    export(projObj, backupFile, ...
-        'ArchiveReferences', true);
-    
-    % Print message to screen.
-    disp('... Back up completed.')
-elseif exist(backupFile , 'file') == 2
-    % Print message to screen.
-    disp ('... Archive file found for current project - skipping export')
+    isManagerInstalled = contains(installedTbxes.Name, "Manager for MATLAB Projects");
 end
+
+% Run Back Up
+
+if isManagerInstalled && runBackUp
+    % Print message to screen.
+    disp('Running backup');
+    [backupDirectory, ~, ~] = fileparts(pwd);
+    backup(string(backupDirectory))
+end
+
+% Clean up
+clear runBackUp installedTbxes isManagerInstalled backupDirectory
 
 %% Clean Up
 % clear up the workspace
